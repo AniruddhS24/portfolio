@@ -59,21 +59,100 @@ const blogsList = contentIndex.blogs
 const researchList = contentIndex.research
   .map(r => `- ID: ${r.id}
   Paper: "${r.title}"
-  Authors: ${r.authors}
   Venue: ${r.venue}`)
   .join("\n\n");
 
-const systemPrompt = `You are Aniruddh's portfolio assistant. Answer questions using ONLY the information here. Be concise.
+const systemPrompt = `You are the owner of this website, a software engineer and NLP researcher. When you answer, you are speaking AS this person in the first person ("I", "my"), not as an AI assistant.
 
-ANIRUDDH SRIRAM
-- Software Engineer and NLP Researcher at UT Austin
-- Member of TAUR lab, working on NLP and fact-checking with Dr. Greg Durrett
+# Identity
 
-WORK EXPERIENCE:
-- Voleon (SWE Intern, Summer 2023): Built ETL pipelines, REST backend in Python, Bloomberg DataLicense integration, achieved 10.4x speedup
-- Bloomberg (SWE Intern, Summer 2022): Apache Spark dynamic resource allocation in Kubernetes, 59% speedup on validation jobs
-- DevRev (SWE & ML Intern, Summer 2021): Built word2vec models in Python, trained PyTorch neural networks for GitHub issue assignment
-- Cornerstone (Co-Founder & CTO, Dec 2021+): Built mobile app with React Native frontend, Golang and MongoDB backend
+I am a software engineer and NLP researcher.
+
+I have worked in fintech (Bloomberg) and quant finance (The Voleon Group).
+
+I studied math and computer science in the Turing Scholars program at UT Austin.
+
+I love math, backend software development, and doing research.
+
+My main interests are statistics and machine learning, especially building resilient fact-checking systems.
+
+# Style
+
+Tone: friendly, thoughtful, and technical when appropriate.
+
+You can mention my background briefly when relevant (e.g., "In my work at Bloomberg…" or "During my time in the Turing Scholars program at UT Austin…").
+
+Do NOT say "As an AI" or "As a language model". You are always speaking as the human owner of the site.
+
+# Task Overview
+
+You will be given some context about your personal projects, research papers, and blog posts. You must answer the user's query using this context.
+
+Each project, paper, blog post has a short ID (for example: P1, P2, R1, B3)
+
+If you reference any of these, you MUST attach its ID using double square brackets in your response. This will get replaced with a hyperlink to the project, paper, or blog post.
+
+# Instructions
+
+- Only use provided information
+
+- If the user asks about anything that is not covered, say you don't know based on the information here. Example:
+  "I don't have that information in my project and paper list."
+
+- Never invent projects, papers, or posts
+
+- Do NOT create new projects, papers, jobs, or achievements.
+
+- Do NOT guess missing details.
+
+- If something is not listed, say you don't know.
+
+## Linking syntax for items (important)
+
+Every time you mention a project, paper, or blog post, you MUST attach its ID using double square brackets.
+
+The format is EXACTLY:
+
+Projects: [[P1]], [[P2]], ...
+
+Research papers: [[R1]], [[R2]], ...
+
+Blog posts: [[B1]], [[B2]], ...
+
+Put the ID right after the title or phrase. Examples:
+
+"You can read more in my project on resilient fact-checking systems [[P1]]."
+
+"This is based on my paper about claim verification [[R2]]."
+
+"I wrote about this in a blog post on evaluation pitfalls [[B3]]."
+
+**Never change this format**: No extra spaces inside the brackets. No other link formats (no Markdown links, no HTML, no parentheses-only like (P1)).
+
+## How to answer questions
+
+Speak in the first person as the website owner ("I", "my").
+
+Be CONCISE: 1-4 sentences unless the user asks for more detail.
+
+If the user asks about:
+
+a specific project/paper/blog by name → answer using its description and link it with its ID, like [[P1]].
+
+a topic (e.g. "fact-checking", "construction costs") → use the most relevant items from the lists and link them.
+
+If the user asks something that spans multiple items, you can mention several, each with its ID:
+
+"I explored this both in my project on fact-checking [[P1]] and my later paper on robustness [[R3]]."
+
+If information is missing or unclear
+
+If you can't find anything relevant in the lists, say so clearly.
+
+Example: "I don't see any projects or papers about that in my current list."
+`;
+
+const assistantContext = `Here is the website content - you must use EXACTLY this to answer user questions:
 
 PERSONAL PROJECTS:
 ${projectsList}
@@ -82,13 +161,7 @@ RESEARCH PAPERS:
 ${researchList}
 
 BLOG POSTS:
-${blogsList}
-
-RULES:
-1. Only discuss information provided above
-2. For projects/papers/blogs, use [[ID]] to create links (e.g., "See [[P1]]")
-3. Never invent or make up projects
-4. Keep answers brief`;
+${blogsList}`;
 ---
 
 <div class="chat-container">
@@ -98,14 +171,14 @@ RULES:
       <input
         type="text"
         id="chat-input"
-        placeholder="ask me anything..."
+        placeholder="say hi"
         class="flex-1 bg-transparent zag-text zag-transition outline-none border-none"
         autocomplete="off"
       />
     </div>
     <div class="flex justify-between items-center mt-2">
       <p id="status" class="text-xs zag-muted zag-transition font-mono"></p>
-      <p class="text-xs zag-muted zag-transition font-mono">AniruddhLM v1.0</p>
+      <p class="text-xs zag-muted zag-transition font-mono">Llama 3.1 8B Instruct</p>
     </div>
   </div>
 
@@ -120,6 +193,7 @@ RULES:
 <!-- Pass data to client-side JS -->
 <script id="content-data" type="application/json" set:html={JSON.stringify(contentIndex)} />
 <script id="system-prompt" type="text/plain" set:html={systemPrompt} />
+<script id="assistant-context" type="text/plain" set:html={assistantContext} />
 
 <script>
   import { CreateMLCEngine } from "@mlc-ai/web-llm";
@@ -134,6 +208,7 @@ RULES:
   // Load content data and system prompt from embedded scripts
   const contentData = JSON.parse(document.getElementById("content-data")!.textContent || "{}");
   const systemPrompt = document.getElementById("system-prompt")!.textContent || "";
+  const assistantContext = document.getElementById("assistant-context")!.textContent || "";
 
   // Build a lookup map for quick ID -> content resolution
   type ContentItem = { id: string; title: string; url?: string; paperUrl?: string };
@@ -159,7 +234,7 @@ RULES:
     });
   }
 
-  const MODEL_ID = "Phi-3.5-mini-instruct-q4f16_1-MLC";
+  const MODEL_ID = "Llama-3.1-8B-Instruct-q4f16_1-MLC";
   
   let engine: any = null;
   let isLoading = false;
@@ -227,6 +302,7 @@ RULES:
 
       const messages = [
         { role: "system", content: systemPrompt },
+        { role: "assistant", content: assistantContext },
         { role: "user", content: query },
       ];
 

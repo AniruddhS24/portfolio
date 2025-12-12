@@ -113,7 +113,7 @@
     font-size: 0.65rem;
     padding: 0.35rem 0.5rem;
     border: none;
-    background: transparent;
+    background-color: var(--color-zag-light);
     color: var(--color-zag-dark);
     cursor: pointer;
     text-transform: lowercase;
@@ -124,12 +124,24 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24'%3E%3Cpath fill='%23171717' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.25rem center;
+    background-size: 8px;
     padding-right: 1.25rem;
   }
 
+  .life-select option {
+    background-color: var(--color-zag-light);
+    color: var(--color-zag-dark);
+  }
+
   :global(.dark) .life-select {
-    color: var(--color-zag-light);
+    background-color: var(--color-zag-dark);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24'%3E%3Cpath fill='%23f5f5f5' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    color: var(--color-zag-light);
+  }
+
+  :global(.dark) .life-select option {
+    background: var(--color-zag-dark);
+    color: var(--color-zag-light);
   }
 
   .life-select:focus {

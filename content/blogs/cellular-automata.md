@@ -8,58 +8,50 @@ timestamp: 2024-12-11
 tags: ["cellular automata", "mathematics", "visualization"]
 ---
 
-If you've visited my homepage, you might have noticed the subtle animations running along the margins. Those aren't just random patterns—they're **cellular automata**, simple rule-based systems that create surprisingly complex behavior.
+If you've visited my homepage, you might have noticed the animations running along the margins. Those are **cellular automata**—simple rule-based systems that create surprisingly complex behavior.
+
+I did a [research project on Pattern Periodicity in Rule 45 Cellular Automata](https://community.wolfram.com/groups/-/m/t/1733073) at the Wolfram High School Summer Research Program, which is why the margin design uses this pattern.
 
 ## What is a Cellular Automaton?
 
-A cellular automaton is a grid of cells, where each cell can be in one of a finite number of states (typically "alive" or "dead"). The grid evolves over discrete time steps according to simple rules based on the states of neighboring cells.
+A cellular automaton is a grid of cells that evolve over time based on simple rules. Each cell is either "alive" (black) or "dead" (white), and its next state depends on its neighbors.
 
-Despite their simplicity, cellular automata can produce incredibly rich and complex patterns, making them a favorite subject of study in mathematics, computer science, and even philosophy.
+<img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Gospers_glider_gun.gif" alt="Conway's Game of Life - Glider Gun" style="max-width: 400px; margin: 1rem auto; display: block;">
+
+*A "glider gun" in Conway's Game of Life—a pattern that continuously generates moving gliders. ([source](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life))*
 
 ## Conway's Game of Life
 
-The most famous cellular automaton is **Conway's Game of Life**, invented by mathematician John Conway in 1970. It follows just four rules:
+**Conway's Game of Life** follows four simple rules:
 
-1. Any live cell with fewer than 2 live neighbors dies (underpopulation)
-2. Any live cell with 2 or 3 live neighbors survives
-3. Any live cell with more than 3 live neighbors dies (overpopulation)
-4. Any dead cell with exactly 3 live neighbors becomes alive (reproduction)
+1. Live cell with <2 neighbors dies (underpopulation)
+2. Live cell with 2-3 neighbors survives
+3. Live cell with >3 neighbors dies (overpopulation)
+4. Dead cell with exactly 3 neighbors becomes alive (reproduction)
 
-From these simple rules emerge complex behaviors: **gliders** that travel across the grid, **oscillators** that pulse in place, and even structures that can compute arbitrary functions.
-
-### Patterns You Can See
-
-On my homepage, you can select different patterns:
-
-- **Gliders**: Small patterns that move diagonally across the grid
-- **Pulsar**: A period-3 oscillator that pulses in a beautiful symmetric pattern
-- **Pentadecathlon**: A period-15 oscillator that stretches and contracts
-- **Spaceships**: Larger patterns (LWSS) that travel across the grid
+From these rules emerge **gliders** that travel, **oscillators** that pulse, and even patterns that can compute.
 
 ## Elementary Cellular Automata & Rule 45
 
-While Conway's Game of Life operates in 2D, **elementary cellular automata** work in 1D. Famously studied by Stephen Wolfram, these automata have 256 possible rules numbered 0-255.
+While Game of Life is 2D, **elementary cellular automata** work in 1D. They start with a single cell and grow downward like a pyramid.
 
-**Rule 45** is particularly interesting because it produces complex, seemingly random behavior from a single starting cell. Starting with one cell at the top, it builds downward like a pyramid, creating intricate fractal-like patterns.
+<img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/CA_rule30s.png" alt="Rule 30 Elementary Cellular Automaton" style="max-width: 300px; margin: 1rem auto; display: block;">
 
-The rule works by looking at each cell and its two neighbors (3 cells = 8 possible combinations), then determining the next state based on a lookup table derived from the binary representation of 45.
+*Rule 30 cellular automaton—each row depends only on the row above it. ([source](https://en.wikipedia.org/wiki/Rule_30))*
 
-## Why I Love Them
+**Rule 45** produces complex patterns from simple rules. Each cell's next state depends on itself and its two neighbors (8 possible combinations), following a lookup table derived from the binary representation of 45.
 
-Cellular automata represent something profound: **complexity emerging from simplicity**. They demonstrate that you don't need complicated rules to create rich, interesting behavior—sometimes the simplest systems produce the most surprising results.
+In my [research project](https://community.wolfram.com/groups/-/m/t/1733073), I analyzed how patterns repeat along diagonals of Rule 45, discovering period doubling and unexpected period tripling in the data.
 
-This idea has influenced my thinking about software engineering and AI systems. Often, the most elegant solutions come from finding the right simple primitives that compose into complex behavior.
+## Why They Matter
+
+Cellular automata show that **complexity emerges from simplicity**. You don't need complicated rules to create interesting behavior—simple primitives can compose into rich patterns.
+
+This idea influences how I think about software and AI: the most elegant solutions often come from finding the right simple building blocks.
 
 ## Try It Yourself
 
-Play with the patterns on my homepage! Use the dropdown to switch between different automata, and hit pause to freeze a moment in time. Watch how different initial conditions lead to vastly different outcomes.
-
-If you want to dive deeper, I recommend:
-- [LifeWiki](https://conwaylife.com/wiki/) - An encyclopedia of Game of Life patterns
-- Stephen Wolfram's "A New Kind of Science" - A deep exploration of cellular automata
-- [Golly](https://golly.sourceforge.io/) - A powerful cellular automata simulator
-
----
-
-*The animations on this site are built with vanilla JavaScript and HTML Canvas. They're designed to be lightweight and pause when you're not looking at the page.*
+Play with the patterns on my homepage! Use the dropdown in the bottom-right to switch between automata. Resources:
+- [LifeWiki](https://conwaylife.com/wiki/) - Game of Life patterns encyclopedia
+- [Golly](https://golly.sourceforge.io/) - Cellular automata simulator
 
