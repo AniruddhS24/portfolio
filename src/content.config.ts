@@ -141,6 +141,36 @@ const configuration = defineCollection({
     }),
 
     /**
+     * The research page's metadata.
+     */
+    researchMeta: z.object({
+      /**
+       * The title of the page, used in the HTML `<title>` tag and Open Graph metadata.
+       */
+      title: z.string(),
+
+      /**
+       * The short description of the page, used in Open Graph metadata and as a fallback for SEO.
+       */
+      description: z.string(),
+
+      /**
+       * The long description of the page, used in Open Graph metadata and as a fallback for SEO.
+       */
+      longDescription: z.string().optional(),
+
+      /**
+       * The URL of the card image for social media sharing.
+       */
+      cardImage: z.string().url().optional(),
+
+      /**
+       * Keywords for SEO, used in the `<meta name="keywords">` tag.
+       */
+      keywords: z.array(z.string()).optional(),
+    }),
+
+    /**
      * The hero section configuration.
      */
     hero: z.object({
@@ -193,6 +223,11 @@ const configuration = defineCollection({
        * The LinkedIn profile URL of the site owner or author.
        */
       linkedinProfile: z.string().url().optional(),
+
+      /**
+       * The email address of the site owner or author.
+       */
+      email: z.string().email().optional(),
     }),
 
     /**
@@ -210,6 +245,16 @@ const configuration = defineCollection({
       projectsName: z.string().default("Projects"),
 
       /**
+       * The text used when displaying the research section.
+       */
+      researchName: z.string().default("Research"),
+
+      /**
+       * The text used when displaying the latest posts section on the homepage.
+       */
+      latestPostsName: z.string().default("Latest Posts"),
+
+      /**
        * The text used for the "View All" button in the articles and projects sections.
        */
       viewAll: z.string().default("View All"),
@@ -223,6 +268,11 @@ const configuration = defineCollection({
        * The text displayed when there are no projects found.
        */
       noProjects: z.string().default("No projects found."),
+
+      /**
+       * The text displayed when there are no research papers found.
+       */
+      noResearch: z.string().default("No research papers found."),
     }),
 
     /**
@@ -232,6 +282,7 @@ const configuration = defineCollection({
     menu: z.object({
       home: z.string().default("/"),
       projects: z.string().default("/projects"),
+      research: z.string().default("/research"),
       blog: z.string().default("/blog"),
       /** Add other menu items here **/
     }),
@@ -377,4 +428,48 @@ const project = defineCollection({
     }),
 });
 
-export const collections = { blog, project, configuration };
+/**
+ * Loader and schema for the research collection.
+ * It loads markdown files from the `content/research` directory and defines the schema for each research paper.
+ */
+const research = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./content/research" }),
+  schema: z.object({
+    /**
+     * The title of the research paper.
+     */
+    title: z.string(),
+    
+    /**
+     * The authors of the research paper.
+     */
+    authors: z.string(),
+
+    /**
+     * The venue/conference where the paper was published.
+     */
+    venue: z.string(),
+
+    /**
+     * A short description of the research.
+     */
+    description: z.string().optional(),
+
+    /**
+     * The URL to the paper (external link).
+     */
+    paperUrl: z.string().url().optional(),
+
+    /**
+     * The URL to the code repository.
+     */
+    codeUrl: z.string().url().optional(),
+
+    /**
+     * The timestamp of when the paper was published.
+     */
+    timestamp: z.date().transform((val) => new Date(val)),
+  }),
+});
+
+export const collections = { blog, project, research, configuration };

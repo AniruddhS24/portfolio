@@ -1,0 +1,38 @@
+---
+import Anchor from "./common/Anchor.astro";
+
+export type Props = {
+  title: string;
+  authors: string;
+  venue: string;
+  paperUrl?: string;
+  codeUrl?: string;
+};
+
+const { title, authors, venue, paperUrl, codeUrl } = Astro.props;
+---
+
+<div class="relative zag-text zag-transition flex flex-col gap-3 mb-8 hover-zag-dotted-grid">
+  <h3 class="text-xl font-medium">
+    {title}
+  </h3>
+  <p class="zag-muted zag-transition text-sm">
+    {authors}
+  </p>
+  <p class="zag-muted zag-transition italic">
+    {venue}
+  </p>
+  <div class="flex gap-4 mt-2">
+    {paperUrl && (
+      <Anchor url={paperUrl} class="text-base">
+        Paper
+      </Anchor>
+    )}
+    {codeUrl && (
+      <Anchor url={codeUrl} class="text-base">
+        Code
+      </Anchor>
+    )}
+  </div>
+</div>
+

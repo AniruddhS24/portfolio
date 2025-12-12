@@ -1,0 +1,74 @@
+---
+import { getCollection } from "astro:content";
+import { getConfigurationCollection } from "../../lib/utils";
+import Layout from "../../layouts/Layout.astro";
+import ResearchSnippet from "../../components/ResearchSnippet.astro";
+import Section from "../../components/common/Section.astro";
+
+const papers = (await getCollection("research")).sort(
+  (a, b) => b.data.timestamp.valueOf() - a.data.timestamp.valueOf(),
+);
+
+const { data: config } = await getConfigurationCollection();
+---
+
+<Layout>
+    <Fragment slot="head">
+    <title>{config.researchMeta.title}</title>
+    <meta
+      name="description"
+      content={config.researchMeta.longDescription ?? config.researchMeta.description}
+    />
+    <meta property="og:title" content={config.researchMeta.title} />
+    <meta
+      property="og:description"
+      content={config.researchMeta.description}
+    />
+    {config.researchMeta.keywords && (
+      <meta name="keywords" content={config.researchMeta.keywords.join(", ")} />
+    )}
+    {config.researchMeta.cardImage && (
+      <meta property="og:image" content={config.researchMeta.cardImage} />
+    )}
+    <meta property="og:url" content={`${config.site.baseUrl}/research`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={config.researchMeta.title} />
+    <meta
+      name="twitter:description"
+      content={config.researchMeta.description}
+    />
+    {config.researchMeta.cardImage && (
+      <meta name="twitter:image" content={config.researchMeta.cardImage} />
+    )}
+    <meta http-equiv="content-language" content="en" />
+    <meta name="language" content="English" />
+    <link rel="canonical" href={`${config.site.baseUrl}/research`} />
+  </Fragment>
+  <Section class="my-8">
+    <div class="flex items-center gap-4 pt-8 pb-16">
+      <h1 class="font-display text-3xl sm:text-4xl leading-loose">
+        {config.texts.researchName}
+      </h1>
+    </div>
+    <ul>
+      {
+        papers.length === 0 ? (
+          <p>{config.texts.noResearch}</p>
+        ) : (
+          papers.map((paper) => (
+            <li>
+              <ResearchSnippet
+                title={paper.data.title}
+                authors={paper.data.authors}
+                venue={paper.data.venue}
+                paperUrl={paper.data.paperUrl}
+                codeUrl={paper.data.codeUrl}
+              />
+            </li>
+          ))
+        )
+      }
+    </ul>
+  </Section>
+</Layout>
+

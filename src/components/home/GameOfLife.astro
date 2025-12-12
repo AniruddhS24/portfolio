@@ -1,0 +1,559 @@
+---
+/**
+ * Conway's Game of Life & Cellular Automata - Decorative margin animation
+ * 
+ * This component displays cellular automata on the left and right margins.
+ * It's designed to be lightweight and can be easily removed if needed.
+ * 
+ * Features:
+ * - Only visible on large screens (hidden on mobile/tablet)
+ * - Respects light/dark theme
+ * - Predefined patterns with dropdown selector
+ * - Play/pause controls
+ * - Includes Rule 45 elementary CA
+ */
+---
+
+<div class="life-wrapper">
+  <div class="life-canvas-container" aria-hidden="true">
+    <canvas id="life-left" class="life-canvas life-left"></canvas>
+    <canvas id="life-right" class="life-canvas life-right"></canvas>
+  </div>
+  
+  <!-- Controls - separate from canvas container -->
+  <div class="life-controls">
+    <div class="life-controls-inner">
+      <select id="pattern-select" class="life-select">
+        <option value="gliders">gliders</option>
+        <option value="pulsar">pulsar</option>
+        <option value="pentadecathlon">pentadecathlon</option>
+        <option value="lwss">spaceships</option>
+        <option value="rule45">rule 45</option>
+        <option value="random">random</option>
+      </select>
+      <button id="play-pause" class="life-button" aria-label="Play/Pause">
+        <span id="pause-icon">▐▐</span>
+        <span id="play-icon" style="display: none;">▶</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- What's this link - left side -->
+  <a href="/blog/cellular-automata" class="life-link">what's this?</a>
+</div>
+
+<style>
+  .life-wrapper {
+    display: none;
+  }
+
+  @media (min-width: 1280px) {
+    .life-wrapper {
+      display: block;
+    }
+  }
+
+  .life-canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .life-canvas {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    opacity: 0.12;
+  }
+
+  :global(.dark) .life-canvas {
+    opacity: 0.08;
+  }
+
+  .life-left {
+    left: 0;
+  }
+
+  .life-right {
+    right: 0;
+  }
+
+  .life-controls {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 50;
+  }
+
+  .life-controls-inner {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border: 2px solid var(--color-zag-dark);
+    background: var(--color-zag-light);
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
+  }
+
+  :global(.dark) .life-controls-inner {
+    border-color: var(--color-zag-light);
+    background: var(--color-zag-dark);
+  }
+
+  .life-controls-inner:hover {
+    opacity: 1;
+  }
+
+  .life-select {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 0.35rem 0.5rem;
+    border: none;
+    background: transparent;
+    color: var(--color-zag-dark);
+    cursor: pointer;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24'%3E%3Cpath fill='%23171717' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.25rem center;
+    padding-right: 1.25rem;
+  }
+
+  :global(.dark) .life-select {
+    color: var(--color-zag-light);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24'%3E%3Cpath fill='%23f5f5f5' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  }
+
+  .life-select:focus {
+    outline: none;
+  }
+
+  .life-button {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    padding: 0.35rem 0.5rem;
+    border: none;
+    border-left: 1px solid var(--color-zag-dark-muted);
+    background: transparent;
+    color: var(--color-zag-dark);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    transition: background 0.15s;
+  }
+
+  :global(.dark) .life-button {
+    border-left-color: var(--color-zag-light-muted);
+    color: var(--color-zag-light);
+  }
+
+  .life-button:hover {
+    background: var(--color-zag-dark);
+    color: var(--color-zag-light);
+  }
+
+  :global(.dark) .life-button:hover {
+    background: var(--color-zag-light);
+    color: var(--color-zag-dark);
+  }
+
+  .life-link {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-zag-dark-muted);
+    text-decoration: none;
+    opacity: 0.4;
+    transition: opacity 0.2s, color 0.15s;
+  }
+
+  :global(.dark) .life-link {
+    color: var(--color-zag-light-muted);
+  }
+
+  .life-link:hover {
+    opacity: 1;
+    color: var(--color-zag-dark);
+    text-decoration: underline;
+  }
+
+  :global(.dark) .life-link:hover {
+    color: var(--color-zag-light);
+  }
+</style>
+
+<script>
+  // Predefined patterns (relative coordinates)
+  const patterns: Record<string, number[][]> = {
+    glider: [
+      [0, 1],
+      [1, 2],
+      [2, 0], [2, 1], [2, 2]
+    ],
+    lwss: [
+      [0, 1], [0, 4],
+      [1, 0],
+      [2, 0], [2, 4],
+      [3, 0], [3, 1], [3, 2], [3, 3]
+    ],
+    pulsar: [
+      [0, 2], [0, 3], [0, 4], [0, 8], [0, 9], [0, 10],
+      [2, 0], [2, 5], [2, 7], [2, 12],
+      [3, 0], [3, 5], [3, 7], [3, 12],
+      [4, 0], [4, 5], [4, 7], [4, 12],
+      [5, 2], [5, 3], [5, 4], [5, 8], [5, 9], [5, 10],
+      [7, 2], [7, 3], [7, 4], [7, 8], [7, 9], [7, 10],
+      [8, 0], [8, 5], [8, 7], [8, 12],
+      [9, 0], [9, 5], [9, 7], [9, 12],
+      [10, 0], [10, 5], [10, 7], [10, 12],
+      [12, 2], [12, 3], [12, 4], [12, 8], [12, 9], [12, 10]
+    ],
+    pentadecathlon: [
+      [0, 1],
+      [1, 1],
+      [2, 0], [2, 2],
+      [3, 1],
+      [4, 1],
+      [5, 1],
+      [6, 1],
+      [7, 0], [7, 2],
+      [8, 1],
+      [9, 1]
+    ]
+  };
+
+  // Rule 45 elementary CA
+  const rule45: Record<string, number> = {
+    "111": 0, "110": 0, "101": 1, "100": 0,
+    "011": 1, "010": 1, "001": 0, "000": 1
+  };
+
+  class CellularAutomaton {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private grid: number[][];
+    private cols: number;
+    private rows: number;
+    private cellSize: number = 10;
+    private animationId: number | null = null;
+    private lastUpdate: number = 0;
+    private updateInterval: number = 100;
+    private isPlaying: boolean = true;
+    private currentPattern: string = "gliders";
+    private isRule45: boolean = false;
+    private rule45Row: number = 0;
+    private rule45State: number[] = [];
+
+    constructor(canvas: HTMLCanvasElement) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext("2d")!;
+      this.cols = 0;
+      this.rows = 0;
+      this.grid = [];
+      this.resize();
+      this.initPattern(this.currentPattern);
+    }
+
+    private resize() {
+      const viewportWidth = window.innerWidth;
+      const contentWidth = 672;
+      const marginWidth = Math.max(0, (viewportWidth - contentWidth) / 2 - 32);
+      
+      this.canvas.width = marginWidth;
+      this.canvas.height = window.innerHeight;
+      
+      this.cols = Math.floor(this.canvas.width / this.cellSize);
+      this.rows = Math.floor(this.canvas.height / this.cellSize);
+    }
+
+    private clearGrid() {
+      this.grid = Array.from({ length: this.rows }, () =>
+        Array.from({ length: this.cols }, () => 0)
+      );
+    }
+
+    private placePattern(pattern: number[][], startY: number, startX: number) {
+      for (const [dy, dx] of pattern) {
+        const y = startY + dy;
+        const x = startX + dx;
+        if (y >= 0 && y < this.rows && x >= 0 && x < this.cols) {
+          this.grid[y][x] = 1;
+        }
+      }
+    }
+
+    private initRule45() {
+      this.isRule45 = true;
+      this.clearGrid();
+      this.rule45Row = 0;
+      // Start with single cell in center
+      this.rule45State = Array(this.cols).fill(0);
+      this.rule45State[Math.floor(this.cols / 2)] = 1;
+      // Copy first row
+      this.grid[0] = [...this.rule45State];
+    }
+
+    private updateRule45() {
+      if (this.rule45Row >= this.rows - 1) {
+        // Reset when we reach bottom
+        this.initRule45();
+        return;
+      }
+
+      this.rule45Row++;
+      const newState = Array(this.cols).fill(0);
+      
+      for (let i = 0; i < this.cols; i++) {
+        const left = this.rule45State[(i - 1 + this.cols) % this.cols];
+        const center = this.rule45State[i];
+        const right = this.rule45State[(i + 1) % this.cols];
+        const pattern = `${left}${center}${right}`;
+        newState[i] = rule45[pattern];
+      }
+      
+      this.rule45State = newState;
+      this.grid[this.rule45Row] = [...newState];
+    }
+
+    initPattern(patternName: string) {
+      this.currentPattern = patternName;
+      this.isRule45 = false;
+      this.clearGrid();
+
+      if (patternName === "rule45") {
+        this.initRule45();
+        return;
+      }
+
+      if (patternName === "random") {
+        for (let y = 0; y < this.rows; y++) {
+          for (let x = 0; x < this.cols; x++) {
+            this.grid[y][x] = Math.random() > 0.94 ? 1 : 0;
+          }
+        }
+        return;
+      }
+
+      if (patternName === "gliders") {
+        const positions = [
+          [3, 2],
+          [Math.floor(this.rows / 3), 1],
+          [Math.floor(this.rows * 2 / 3), 3]
+        ];
+        for (const [y, x] of positions) {
+          this.placePattern(patterns.glider, y, x);
+        }
+        return;
+      }
+
+      if (patternName === "lwss") {
+        const positions = [
+          [5, 1],
+          [Math.floor(this.rows / 2), 0],
+          [Math.floor(this.rows - 15), 2]
+        ];
+        for (const [y, x] of positions) {
+          this.placePattern(patterns.lwss, y, x);
+        }
+        return;
+      }
+
+      if (patternName === "pulsar") {
+        const centerY = Math.floor((this.rows - 13) / 2);
+        const centerX = Math.floor((this.cols - 13) / 2);
+        if (centerX >= 0 && centerY >= 0) {
+          this.placePattern(patterns.pulsar, centerY, centerX);
+        }
+        return;
+      }
+
+      if (patternName === "pentadecathlon") {
+        const positions = [
+          [Math.floor(this.rows / 4), Math.floor(this.cols / 2) - 1],
+          [Math.floor(this.rows * 3 / 4) - 5, Math.floor(this.cols / 2) - 1]
+        ];
+        for (const [y, x] of positions) {
+          this.placePattern(patterns.pentadecathlon, y, x);
+        }
+        return;
+      }
+    }
+
+    private getColor(): string {
+      const isDark = document.documentElement.classList.contains("dark");
+      return isDark ? "#f5f5f5" : "#171717";
+    }
+
+    private draw() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.fillStyle = this.getColor();
+      
+      const maxRow = this.isRule45 ? this.rule45Row + 1 : this.rows;
+      
+      for (let y = 0; y < maxRow; y++) {
+        for (let x = 0; x < this.cols; x++) {
+          if (this.grid[y]?.[x]) {
+            this.ctx.fillRect(
+              x * this.cellSize + 1,
+              y * this.cellSize + 1,
+              this.cellSize - 2,
+              this.cellSize - 2
+            );
+          }
+        }
+      }
+    }
+
+    private updateGameOfLife() {
+      const next = this.grid.map(arr => [...arr]);
+      
+      for (let y = 0; y < this.rows; y++) {
+        for (let x = 0; x < this.cols; x++) {
+          let neighbors = 0;
+          
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+              if (dx || dy) {
+                const ny = (y + dy + this.rows) % this.rows;
+                const nx = (x + dx + this.cols) % this.cols;
+                neighbors += this.grid[ny]?.[nx] || 0;
+              }
+            }
+          }
+          
+          if (this.grid[y][x] && (neighbors < 2 || neighbors > 3)) {
+            next[y][x] = 0;
+          } else if (!this.grid[y][x] && neighbors === 3) {
+            next[y][x] = 1;
+          }
+        }
+      }
+      
+      this.grid = next;
+    }
+
+    private update() {
+      if (this.isRule45) {
+        this.updateRule45();
+      } else {
+        this.updateGameOfLife();
+      }
+    }
+
+    private loop = (timestamp: number) => {
+      if (this.isPlaying && timestamp - this.lastUpdate >= this.updateInterval) {
+        this.draw();
+        this.update();
+        this.lastUpdate = timestamp;
+      } else if (!this.isPlaying) {
+        this.draw();
+      }
+      this.animationId = requestAnimationFrame(this.loop);
+    };
+
+    start() {
+      if (!this.animationId) {
+        this.animationId = requestAnimationFrame(this.loop);
+      }
+    }
+
+    stop() {
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+      }
+    }
+
+    togglePlay(): boolean {
+      this.isPlaying = !this.isPlaying;
+      return this.isPlaying;
+    }
+
+    handleResize() {
+      this.resize();
+      this.initPattern(this.currentPattern);
+    }
+  }
+
+  function initCellularAutomaton() {
+    if (window.innerWidth < 1280) return;
+
+    const leftCanvas = document.getElementById("life-left") as HTMLCanvasElement;
+    const rightCanvas = document.getElementById("life-right") as HTMLCanvasElement;
+    const patternSelect = document.getElementById("pattern-select") as HTMLSelectElement;
+    const playPauseBtn = document.getElementById("play-pause") as HTMLButtonElement;
+    const pauseIcon = document.getElementById("pause-icon") as HTMLSpanElement;
+    const playIcon = document.getElementById("play-icon") as HTMLSpanElement;
+
+    if (!leftCanvas || !rightCanvas) return;
+
+    const leftGame = new CellularAutomaton(leftCanvas);
+    const rightGame = new CellularAutomaton(rightCanvas);
+
+    leftGame.start();
+    rightGame.start();
+
+    patternSelect?.addEventListener("change", (e) => {
+      const pattern = (e.target as HTMLSelectElement).value;
+      leftGame.initPattern(pattern);
+      rightGame.initPattern(pattern);
+    });
+
+    playPauseBtn?.addEventListener("click", () => {
+      const isPlaying = leftGame.togglePlay();
+      rightGame.togglePlay();
+      
+      if (isPlaying) {
+        pauseIcon.style.display = "inline";
+        playIcon.style.display = "none";
+      } else {
+        pauseIcon.style.display = "none";
+        playIcon.style.display = "inline";
+      }
+    });
+
+    let resizeTimeout: number;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = window.setTimeout(() => {
+        if (window.innerWidth >= 1280) {
+          leftGame.handleResize();
+          rightGame.handleResize();
+          leftGame.start();
+          rightGame.start();
+        } else {
+          leftGame.stop();
+          rightGame.stop();
+        }
+      }, 200);
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        leftGame.stop();
+        rightGame.stop();
+      } else if (window.innerWidth >= 1280) {
+        leftGame.start();
+        rightGame.start();
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCellularAutomaton);
+  } else {
+    initCellularAutomaton();
+  }
+</script>

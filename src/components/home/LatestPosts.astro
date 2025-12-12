@@ -1,0 +1,36 @@
+---
+import type { ArticleFrontmatter } from "../../lib/types";
+import { getConfigurationCollection } from "../../lib/utils";
+import ArticleSnippet from "../ArticleSnippet.astro";
+import Anchor from "../common/Anchor.astro";
+
+type Props = {
+  latestPosts: Array<ArticleFrontmatter>;
+}
+
+
+const { latestPosts } = Astro.props;
+const { data: config } = await getConfigurationCollection();
+---
+
+<div class="flex justify-between items-center w-full">
+  <h3 class="font-display text-lg sm:text-xl leading-loose">{config.texts.latestPostsName}</h3>
+  <Anchor url="/blog" class="text-base">{config.texts.viewAll}</Anchor>
+</div>
+<ul class="my-8">
+  {
+    (latestPosts.length === 0 && <p>{config.texts.noArticles}</p>) ||
+      latestPosts.map((post) => (
+        <li>
+          <ArticleSnippet
+            title={post.title}
+            description={post.description}
+            url={post.url}
+            timestamp={post.timestamp}
+            duration={`${post.readTime} min`}
+          />
+        </li>
+      ))
+  }
+</ul>
+

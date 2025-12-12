@@ -2,56 +2,62 @@
 # we need to prefix all configuration keys with an underscore.
 
 [_.site]
-baseUrl = "http://zaggonaut.dev"
+baseUrl = "http://localhost:4321"
 
 [_.globalMeta]
-title = "Zaggonaut"
-description = "Retro-Inspired Theme & Built for Astro"
-longDescription = "Zaggonaut is a retro-inspired theme for Astro, built using TypeScript, TailwindCSS, and Astro."
-cardImage = "https://zaggonaut.dev/michael-dam-unsplash.webp"
-keywords = ["web development", "design", "technology"]
+title = "Aniruddh Sriram"
+description = "Software Engineer & NLP Researcher"
+longDescription = "Personal portfolio and blog of Aniruddh Sriram - Software Engineer and NLP Researcher at UT Austin."
+keywords = ["software engineering", "NLP", "machine learning", "research"]
 
 [_.blogMeta]
-title = "Zaggonaut Blog"
-description = "Practical wisdom, unfiltered thoughts, and hot takes."
-longDescription = "Web development, tech trends, and the occasional programming mishap."
-cardImage = "https://zaggonaut.dev/michael-dam-unsplash.webp"
-keywords = ["web development", "design", "technology"]
+title = "Blog - Aniruddh Sriram"
+description = "Thoughts on software engineering, machine learning, and research."
+longDescription = "Practical wisdom, unfiltered thoughts, and technical deep dives."
+keywords = ["software engineering", "NLP", "machine learning", "programming"]
 
 [_.projectMeta]
-title = "Zaggonaut Projects"
-description = "A list of my web development projects and developer tools."
-longDescription = "All of my projects, including both frontend and full-stack applications."
-cardImage = "https://zaggonaut.dev/michael-dam-unsplash.webp"
-keywords = ["web development", "design", "technology"]
+title = "Projects - Aniruddh Sriram"
+description = "A collection of software projects and developer tools."
+longDescription = "Software projects spanning CUDA, machine learning, mobile development, and more."
+keywords = ["projects", "software", "open source", "development"]
+
+[_.researchMeta]
+title = "Research - Aniruddh Sriram"
+description = "Academic research in Natural Language Processing and Fact Checking."
+longDescription = "Publications and research work in NLP, automatic fact-checking, and machine learning."
+keywords = ["NLP", "research", "fact checking", "machine learning", "publications"]
 
 [_.notFoundMeta]
-title = "Zaggonaut 404"
+title = "404 - Page Not Found"
 description = "The page you are looking for does not exist."
-longDescription = "The page you are looking for does not exist. Maybe it never existed. Spooky."
-cardImage = "https://zaggonaut.dev/michael-dam-unsplash.webp"
+longDescription = "The page you are looking for does not exist. Maybe it never existed."
 
 [_.hero]
-title = "Zaggonaut"
-subtitle = "Retro-Inspired Theme &<br />Built for Astro"
-image = "https://zaggonaut.dev/michael-dam-unsplash.webp"
+title = "Aniruddh Sriram"
+subtitle = "Software Engineer &<br />NLP Researcher"
 ctaText = "View Projects"
 ctaUrl = "/projects"
 
 [_.personal]
-name = "Zaggonaut"
-githubProfile = "https://github.com/RATIU5/zaggonaut"
-twitterProfile = "https://twitter.com"
-linkedinProfile = "https://linkedin.com/"
+name = "Aniruddh Sriram"
+githubProfile = "https://github.com/AniruddhS24"
+linkedinProfile = "https://www.linkedin.com/in/aniruddh-sriram/"
+twitterProfile = "https://x.com/aniruddhsr24"
+email = "aniruddhsriramsf@gmail.com"
 
 [_.texts]
-articlesName = "Articles"
+articlesName = "Blog"
 projectsName = "Projects"
+researchName = "Research"
+latestPostsName = "Latest Posts"
 viewAll = "View All"
-noArticles = "No articles found."
+noArticles = "No posts found."
 noProjects = "No projects found."
+noResearch = "No research papers found."
 
 [_.menu]
 home = "/"
 projects = "/projects"
+research = "/research"
 blog = "/blog"
