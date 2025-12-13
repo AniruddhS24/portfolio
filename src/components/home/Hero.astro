@@ -4,14 +4,12 @@ import { getConfigurationCollection } from "../../lib/utils";
 const { data: config } = await getConfigurationCollection();
 ---
 
-<div class="flex flex-col sm:flex-row items-center gap-8">
-  <div class="profile-container shrink-0 rounded-2xl overflow-hidden p-4 zag-bg-opaque">
-    <img 
-      src="/profile.svg" 
-      alt="Profile sketch"
-      class="profile-sketch w-40 h-52 sm:w-52 sm:h-68"
-    />
-  </div>
+<div class="flex flex-col sm:flex-row items-center gap-8 sm:gap-14">
+  <img 
+    src="/profile.svg" 
+    alt="Profile sketch"
+    class="profile-sketch shrink-0 rounded-b-4xl"
+  />
   <div class="flex flex-col items-center sm:items-start gap-6">
     <h1
       class="text-3xl sm:text-4xl font-display font-semibold opsz text-center sm:text-left"
@@ -27,18 +25,18 @@ const { data: config } = await getConfigurationCollection();
 </div>
 
 <style>
-  .profile-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.15s ease-in-out;
+  .profile-sketch {
+    display: block;
+    width: 9rem;
+    height: auto;
+    object-fit: contain;
+    transition: filter 0.15s ease-in-out;
   }
   
-  .profile-sketch {
-    /* Keep aspect ratio - the image naturally maintains it */
-    object-fit: contain;
-    /* Apply smooth transition */
-    transition: filter 0.15s ease-in-out;
+  @media (min-width: 640px) {
+    .profile-sketch {
+      width: 11.5rem;
+    }
   }
   
   /* Light mode: keep black */
