@@ -1,167 +1,28 @@
 ---
-import { getCollection } from "astro:content";
-import { getConfigurationCollection } from "../../lib/utils";
-
-const { data: config } = await getConfigurationCollection();
-
-// Fetch all content at build time
-const projects = (await getCollection("project")).sort(
-  (a, b) => b.data.timestamp.valueOf() - a.data.timestamp.valueOf()
-);
-const blogs = (await getCollection("blog")).sort(
-  (a, b) => b.data.timestamp.valueOf() - a.data.timestamp.valueOf()
-);
-const research = (await getCollection("research")).sort(
-  (a, b) => b.data.timestamp.valueOf() - a.data.timestamp.valueOf()
-);
-
-// Build content index with IDs
-const contentIndex = {
-  projects: projects.map((p, i) => ({
-    id: `P${i + 1}`,
-    title: p.data.title,
-    description: p.data.description,
-    tags: p.data.tags || [],
-    url: `/projects/${p.data.slug}`,
-    githubUrl: p.data.githubUrl,
-  })),
-  blogs: blogs.map((b, i) => ({
-    id: `B${i + 1}`,
-    title: b.data.title,
-    description: b.data.description,
-    tags: b.data.tags || [],
-    url: `/blog/${b.data.slug}`,
-  })),
-  research: research.map((r, i) => ({
-    id: `R${i + 1}`,
-    title: r.data.title,
-    authors: r.data.authors,
-    venue: r.data.venue,
-    paperUrl: r.data.paperUrl,
-    codeUrl: r.data.codeUrl,
-  })),
-};
-
-// Build the system prompt with clearer formatting
-const projectsList = contentIndex.projects
-  .map(p => `- ID: ${p.id}
-  Name: "${p.title}"
-  Description: ${p.description}
-  Technologies: ${p.tags.join(", ") || "not specified"}`)
-  .join("\n\n");
-
-const blogsList = contentIndex.blogs
-  .map(b => `- ID: ${b.id}
-  Title: "${b.title}"
-  Description: ${b.description}`)
-  .join("\n\n");
-
-const researchList = contentIndex.research
-  .map(r => `- ID: ${r.id}
-  Paper: "${r.title}"
-  Venue: ${r.venue}`)
-  .join("\n\n");
-
-const systemPrompt = `You are the owner of this website, a software engineer and NLP researcher. When you answer, you are speaking AS this person in the first person ("I", "my"), not as an AI assistant.
+const systemPrompt = `You are Aniruddh Sriram, the owner of this portfolio website. You're chatting with visitors who want to get to know you better.
 
 # Identity
 
-I am a software engineer and NLP researcher.
+You are a software engineer and NLP researcher passionate about building intelligent systems. You studied math and computer science in the Turing Scholars program at UT Austin, where you fell in love with the intersection of statistics, machine learning, and practical software engineering.
 
-I have worked in fintech (Bloomberg) and quant finance (The Voleon Group).
+You've worked in fintech at Bloomberg and quant finance at The Voleon Group, where you got to tackle challenging problems at the intersection of data, algorithms, and real-world systems.
 
-I studied math and computer science in the Turing Scholars program at UT Austin.
+These days, you're particularly interested in natural language processing, especially building resilient fact-checking systems and improving how AI systems handle complex reasoning. You love backend development and you are most proficient in Python, C++, and Golang.
 
-I love math, backend software development, and doing research.
+# Personality & Style
 
-My main interests are statistics and machine learning, especially building resilient fact-checking systems.
+- Be friendly, approachable, and conversational - like you're chatting over coffee
+- IMPORTANT:Keep responses concise (1 sentence)
+- DO NOT hallucinate or say anything that is not provided to you in the Identity section
+- Use "I" - you ARE Aniruddh, not an AI assistant
 
-# Style
+# Example Responses
 
-Tone: friendly, thoughtful, and technical when appropriate.
-
-You can mention my background briefly when relevant (e.g., "In my work at Bloomberg…" or "During my time in the Turing Scholars program at UT Austin…").
-
-Do NOT say "As an AI" or "As a language model". You are always speaking as the human owner of the site.
-
-# Task Overview
-
-You will be given some context about your personal projects, research papers, and blog posts. You must answer the user's query using this context.
-
-Each project, paper, blog post has a short ID (for example: P1, P2, R1, B3)
-
-If you reference any of these, you MUST attach its ID using double square brackets in your response. This will get replaced with a hyperlink to the project, paper, or blog post.
-
-# Instructions
-
-- Only use provided information
-
-- If the user asks about anything that is not covered, say you don't know based on the information here. Example:
-  "I don't have that information in my project and paper list."
-
-- Never invent projects, papers, or posts
-
-- Do NOT create new projects, papers, jobs, or achievements.
-
-- Do NOT guess missing details.
-
-- If something is not listed, say you don't know.
-
-## Linking syntax for items (important)
-
-Every time you mention a project, paper, or blog post, you MUST attach its ID using double square brackets.
-
-The format is EXACTLY:
-
-Projects: [[P1]], [[P2]], ...
-
-Research papers: [[R1]], [[R2]], ...
-
-Blog posts: [[B1]], [[B2]], ...
-
-Put the ID right after the title or phrase. Examples:
-
-"You can read more in my project on resilient fact-checking systems [[P1]]."
-
-"This is based on my paper about claim verification [[R2]]."
-
-"I wrote about this in a blog post on evaluation pitfalls [[B3]]."
-
-**Never change this format**: No extra spaces inside the brackets. No other link formats (no Markdown links, no HTML, no parentheses-only like (P1)).
-
-## How to answer questions
-
-Speak in the first person as the website owner ("I", "my").
-
-Be CONCISE: 1-4 sentences unless the user asks for more detail.
-
-If the user asks about:
-
-a specific project/paper/blog by name → answer using its description and link it with its ID, like [[P1]].
-
-a topic (e.g. "fact-checking", "construction costs") → use the most relevant items from the lists and link them.
-
-If the user asks something that spans multiple items, you can mention several, each with its ID:
-
-"I explored this both in my project on fact-checking [[P1]] and my later paper on robustness [[R3]]."
-
-If information is missing or unclear
-
-If you can't find anything relevant in the lists, say so clearly.
-
-Example: "I don't see any projects or papers about that in my current list."
+- "Hello, I'm Aniruddh. Nice to meet you! Feel free to explore the projects page to see some of my work."
+- "I became interested in natural language processing during my time at UT Austin"
+- "I have worked on building fact-checking systems"
+- "I love backend development and I am most proficient in Python, C++, and Golang"
 `;
-
-const assistantContext = `Here is the website content - you must use EXACTLY this to answer user questions:
-
-PERSONAL PROJECTS:
-${projectsList}
-
-RESEARCH PAPERS:
-${researchList}
-
-BLOG POSTS:
-${blogsList}`;
 ---
 
 <div class="chat-container">
@@ -178,7 +39,7 @@ ${blogsList}`;
     </div>
     <div class="flex justify-between items-center mt-2">
       <p id="status" class="text-xs zag-muted zag-transition font-mono"></p>
-      <p class="text-xs zag-muted zag-transition font-mono">Llama 3.1 8B Instruct</p>
+      <p class="text-xs zag-muted zag-transition font-mono">Llama 3.2 3B Instruct</p>
     </div>
   </div>
 
@@ -190,10 +51,8 @@ ${blogsList}`;
   </div>
 </div>
 
-<!-- Pass data to client-side JS -->
-<script id="content-data" type="application/json" set:html={JSON.stringify(contentIndex)} />
+<!-- Pass system prompt to client-side JS -->
 <script id="system-prompt" type="text/plain" set:html={systemPrompt} />
-<script id="assistant-context" type="text/plain" set:html={assistantContext} />
 
 <script>
   import { CreateMLCEngine } from "@mlc-ai/web-llm";
@@ -205,36 +64,10 @@ ${blogsList}`;
     gfm: true,
   });
 
-  // Load content data and system prompt from embedded scripts
-  const contentData = JSON.parse(document.getElementById("content-data")!.textContent || "{}");
+  // Load system prompt from embedded script
   const systemPrompt = document.getElementById("system-prompt")!.textContent || "";
-  const assistantContext = document.getElementById("assistant-context")!.textContent || "";
 
-  // Build a lookup map for quick ID -> content resolution
-  type ContentItem = { id: string; title: string; url?: string; paperUrl?: string };
-  const contentMap = new Map<string, ContentItem>();
-  
-  contentData.projects?.forEach((p: ContentItem) => contentMap.set(p.id, p));
-  contentData.blogs?.forEach((b: ContentItem) => contentMap.set(b.id, b));
-  contentData.research?.forEach((r: ContentItem) => contentMap.set(r.id, r));
-
-  // Post-process response to convert [[ID]] to actual links
-  function processPortfolioLinks(html: string): string {
-    // Match [[P1]], [[B2]], [[R3]] etc.
-    return html.replace(/\[\[([A-Z]\d+)\]\]/g, (match, id) => {
-      const item = contentMap.get(id);
-      if (!item) return match;
-      
-      // For research papers, use paperUrl; for others use internal url
-      const url = item.url || item.paperUrl || "#";
-      const isExternal = url.startsWith("http");
-      const target = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
-      
-      return `<a href="${url}"${target} class="portfolio-link">${item.title}</a>`;
-    });
-  }
-
-  const MODEL_ID = "Llama-3.1-8B-Instruct-q4f16_1-MLC";
+  const MODEL_ID = "Llama-3.2-3B-Instruct-q4f16_1-MLC";
   
   let engine: any = null;
   let isLoading = false;
@@ -302,14 +135,13 @@ ${blogsList}`;
 
       const messages = [
         { role: "system", content: systemPrompt },
-        { role: "assistant", content: assistantContext },
         { role: "user", content: query },
       ];
 
       // Stream the response
       const chunks = await eng.chat.completions.create({
         messages,
-        temperature: 0.7,
+        temperature: 0.8,
         stream: true,
         stream_options: { include_usage: true },
       });
@@ -318,9 +150,9 @@ ${blogsList}`;
       for await (const chunk of chunks) {
         const delta = chunk.choices[0]?.delta?.content || "";
         reply += delta;
-        // Render markdown and process portfolio links
+        // Render markdown
         const htmlContent = marked.parse(reply) as string;
-        responseContent.innerHTML = processPortfolioLinks(htmlContent);
+        responseContent.innerHTML = htmlContent;
       }
 
       status.textContent = "";
@@ -456,11 +288,6 @@ ${blogsList}`;
 
   #response-content :global(a:hover) {
     text-decoration: none;
-  }
-
-  /* Portfolio link styling */
-  #response-content :global(.portfolio-link) {
-    font-weight: 500;
   }
 
   #response-content :global(strong) {
