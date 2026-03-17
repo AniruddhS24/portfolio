@@ -23,9 +23,7 @@ import "../styles/global.css";
         if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
           return localStorage.getItem("theme") ?? "light";
         }
-        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          return "dark";
-        }
+        // Default to light mode instead of checking system preferences
         return "light";
       })();
 
