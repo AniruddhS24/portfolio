@@ -333,6 +333,11 @@ const blog = defineCollection({
       readTime: z.number().optional(),
 
       /**
+       * An external URL for the blog post (e.g. Medium article). If set, the post links externally instead of to an internal page.
+       */
+      externalUrl: z.string().url().optional(),
+
+      /**
        * Whether the blog post is featured on the homepage.
        */
       featured: z.boolean().default(false),

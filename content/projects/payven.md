@@ -4,6 +4,7 @@ slug: payven
 description: No-hassle splitting of restaurant receipts
 tags: ["TypeScript", "Python", "AWS"]
 githubUrl: https://github.com/aniruddhs24/fairshare
+liveDemoUrl: https://payven.app
 timestamp: 2024-12-12
 featured: true
 ---
