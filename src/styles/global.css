@@ -128,6 +128,15 @@
     }
   }
 
+  .zag-tag {
+    border: 1px solid var(--color-zag-dark-muted);
+    color: var(--color-zag-dark-muted);
+    :where(.dark, .dark *) & {
+      border-color: var(--color-zag-light-muted);
+      color: var(--color-zag-light-muted);
+    }
+  }
+
   .zag-border-b {
     border-bottom: var(--zag-stroke) solid;
     border-color: var(--color-zag-dark);
