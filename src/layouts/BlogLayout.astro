@@ -8,7 +8,9 @@ import Layout from "./Layout.astro";
 type Props = { frontmatter: ArticleFrontmatter };
 
 const { frontmatter } = Astro.props;
-const articleDate = processArticleDate(frontmatter.timestamp);
+const articleDate = frontmatter.timestamp
+  ? processArticleDate(frontmatter.timestamp)
+  : null;
 const { data: config } = await getConfigurationCollection();
 ---
 
