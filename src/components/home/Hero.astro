@@ -4,12 +4,14 @@ import { getConfigurationCollection } from "../../lib/utils";
 const { data: config } = await getConfigurationCollection();
 ---
 
-<div class="flex flex-col sm:flex-row items-center gap-8 sm:gap-14">
-  <img 
-    src="/profile.svg" 
-    alt="Profile sketch"
-    class="profile-sketch shrink-0 rounded-b-4xl"
-  />
+<div class="flex flex-col sm:flex-row items-center sm:items-end gap-8 sm:gap-14">
+  <div class="profile-frame shrink-0">
+    <img
+      src="/profile.svg"
+      alt="Profile sketch"
+      class="profile-sketch"
+    />
+  </div>
   <div class="flex flex-col items-center sm:items-start gap-6">
     <h1
       class="text-3xl sm:text-4xl font-display font-semibold opsz text-center sm:text-left"
@@ -25,27 +27,31 @@ const { data: config } = await getConfigurationCollection();
 </div>
 
 <style>
+  .profile-frame {
+    display: block;
+    overflow: hidden;
+    transition: background-color 0.15s ease-in-out;
+  }
+
   .profile-sketch {
     display: block;
-    width: 9rem;
+    width: 8rem;
     height: auto;
     object-fit: contain;
-    transition: filter 0.15s ease-in-out;
-  }
-  
-  @media (min-width: 640px) {
-    .profile-sketch {
-      width: 11.5rem;
-    }
-  }
-  
-  /* Light mode: keep black */
-  .profile-sketch {
+    /* Crop a sliver off the bottom of the photo */
+    margin-bottom: -0.5rem;
+    /* Force the sketch black in both modes (filter only affects the img, not the frame) */
     filter: brightness(0);
   }
-  
-  /* Dark mode: invert to white */
-  :global(.dark) .profile-sketch {
-    filter: brightness(0) invert(1);
+
+  @media (min-width: 640px) {
+    .profile-sketch {
+      width: 10rem;
+    }
+  }
+
+  /* Dark mode: sit the black sketch on a light frame instead of inverting it */
+  :global(.dark) .profile-frame {
+    background-color: var(--color-zag-light);
   }
 </style>

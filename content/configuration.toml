@@ -35,7 +35,7 @@ longDescription = "The page you are looking for does not exist. Maybe it never e
 
 [_.hero]
 title = "Aniruddh Sriram"
-subtitle = "Software Engineer &<br />NLP Researcher"
+subtitle = "uh·ni·rudh shree·rahm"
 ctaText = "View Projects"
 ctaUrl = "/projects"
 
@@ -48,7 +48,7 @@ email = "aniruddhsriramsf@gmail.com"
 
 [_.texts]
 articlesName = "Blog"
-projectsName = "Projects"
+projectsName = "Side Quests"
 researchName = "Research"
 latestPostsName = "Latest Posts"
 viewAll = "View All"
@@ -58,6 +58,6 @@ noResearch = "No research papers found."
 
 [_.menu]
 home = "/"
-projects = "/projects"
 research = "/research"
+projects = "/projects"
 blog = "/blog"

@@ -281,8 +281,8 @@ const configuration = defineCollection({
      */
     menu: z.object({
       home: z.string().default("/"),
-      projects: z.string().default("/projects"),
       research: z.string().default("/research"),
+      projects: z.string().default("/projects"),
       blog: z.string().default("/blog"),
       /** Add other menu items here **/
     }),
@@ -343,9 +343,14 @@ const blog = defineCollection({
       featured: z.boolean().default(false),
 
       /**
+       * Whether to hide the post from the blog list (still reachable by direct URL).
+       */
+      hidden: z.boolean().default(false),
+
+      /**
        * The timestamp of the blog post, used for sorting and displaying the date.
        */
-      timestamp: z.date().transform((val) => new Date(val)),
+      timestamp: z.date().transform((val) => new Date(val)).optional(),
     })
     .transform((data) => {
       const slug =

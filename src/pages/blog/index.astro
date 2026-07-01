@@ -5,9 +5,11 @@ import Layout from "../../layouts/Layout.astro";
 import ArticleSnippet from "../../components/ArticleSnippet.astro";
 import Section from "../../components/common/Section.astro";
 
-const articles = (await getCollection("blog")).sort(
-  (a, b) => b.data.timestamp.valueOf() - a.data.timestamp.valueOf(),
-);
+const articles = (await getCollection("blog"))
+  .filter((article) => !article.data.hidden)
+  .sort(
+    (a, b) => (b.data.timestamp?.valueOf() ?? 0) - (a.data.timestamp?.valueOf() ?? 0),
+  );
 
 const { data: config } = await getConfigurationCollection();
 ---

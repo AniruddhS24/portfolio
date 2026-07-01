@@ -4,7 +4,7 @@ slug: cellular-automata
 description: Exploring the fascinating world of cellular automata, from Conway's Game of Life to elementary automata like Rule 45.
 readTime: 5
 featured: false
-timestamp: 2024-12-11
+hidden: true
 tags: ["cellular automata", "mathematics", "visualization"]
 ---
 

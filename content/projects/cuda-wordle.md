@@ -1,7 +1,7 @@
 ---
 title: cuda-wordle
 slug: cuda-wordle
-description: CUDA-Optimized Wordle solver using parallel computing for blazing-fast word elimination.
+description: CUDA-optimized wordle solver based on information theory
 tags: ["C++", "CUDA"]
 githubUrl: https://github.com/aniruddhs24/cuda-wordle
 timestamp: 2023-05-05

@@ -1,10 +1,10 @@
 ---
-title: ShowMi
+title: showmi
 slug: showmi
 description: A self-learning browser agent you control from a Chrome sidebar
 tags: ["TypeScript", "Chrome Extension", "AI"]
 githubUrl: https://github.com/AniruddhS24/showmi
-timestamp: 2025-03-01
+timestamp: 2025-06-01
 featured: true
 ---
 
